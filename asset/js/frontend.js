@@ -71,14 +71,14 @@ var wpeo_point_ticket = {
   },
 
 	send_mail: function( element ) {
-		//var task_id = jQuery( element ).closest( '.wpeo-project-task' ).data( 'id' );
-
+		var task_id = jQuery( element ).closest( '.wpeo-task-li-point' ).data( 'task' );
+		var point_id = jQuery( element ).closest( '.wpeo-task-li-point' ).data( 'id' );
 		var data = {
 			action: 'my_send_mail',
-			//id: task_id,
+			task_id: task_id,
+			point_id: point_id,
 			_wpnonce: jQuery( element ).data( 'nonce' ),
 		};
-
 		jQuery.eoajax( ajaxurl, data, function() {
 
 		} );

@@ -24,11 +24,11 @@ class ticket_action_01
 			$point->option['time_info']['completed_point'][get_current_user_id()][] = current_time( 'mysql' );
 		}
 		else {
-			$point->option['time_info']['uncompleted_point'][get_current_user_id()][] = current_time( 'mysql' );
+			$point->option['time_info']['Uncompleted_point'][get_current_user_id()][] = current_time( 'mysql' );
 		}
 
 		$_POST['point']['option']['time_info']['completed_point'] = $point->option['time_info']['completed_point'];
-		$_POST['point']['option']['time_info']['uncompleted_point'] = $point->option['time_info']['uncompleted_point'];
+		$_POST['point']['option']['time_info']['Uncompleted_point'] = $point->option['time_info']['Uncompleted_point'];
 
 		$point_controller->update( $_POST['point'] );
 
@@ -87,6 +87,7 @@ class ticket_action_01
 		global $time_controller;
 		$task 				= $task_controller->show( $_POST['task_id'] );
 		$point 				= $point_controller->show( $_POST['point_id'] );
+		$comment			= $_POST['submit'];
 
 		$sender_data = wp_get_current_user();
 		$multiple_recipients = array();
@@ -99,18 +100,18 @@ class ticket_action_01
 		}
 
 		$subject = 'Task Manager: ';
-		$subject .= __( 'Commentaire suite au ticket #' . $task->id . ' ' . $point->id, 'task-manager' );
-		$body = __( '<p>This mail has been send automatically</p>', 'task-manager' );
-		$body .= '<h2>#' . $list_time . ' ' . $point->title . ' send by ' . $sender_data->user_login . ' (' . $sender_data->user_email . ')</h2>';
+		$subject .= __( 'Commentaire suite au ticket #' . $task->id . ' ' . $task->title, 'task-manager' );
+		$body = __( '<p>Ce mail est envoyé automatiquement</p>' , 'task-manager' );
+		$body .= '<h2>'. 'Ticket n°' . $task->id . ' ' . $task->title . ' Envoyé par : ' . $sender_data->user_login . ' (' . $sender_data->user_email . ')</h2>';
 		$body = apply_filters( 'task_points_mail', $body, $task );
 		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
-
+		$message = '<p>' . 'Voici le commentaire laissé :' . $submit . '</p>';
 		$admin_email = get_bloginfo( 'admin_email' );
 		$blog_name = get_bloginfo( 'name' );
 
 		$headers[] = 'From: ' . $blog_name . ' <' . $admin_email . '>';
 
-		wp_mail( array( 'ReasonEQ@gmail.com' ), $subject , $body , array( 'Content-Type: text/html; charset=UTF-8', $headers, $mail) );
+		wp_mail( array( 'ReasonEQ@gmail.com' ), $subject , $body , array( 'Content-Type: text/html; charset=UTF-8', $headers, $message, $mail ) );
 
 		wp_send_json_success();
 	}
