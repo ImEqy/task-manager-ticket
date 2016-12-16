@@ -10,6 +10,7 @@ class ticket_action_01
 		add_action( 'wp_ajax_ticket_create_point_time', array( $this, 'ajax_ticket_create_point_time' ) );
 		add_action( 'wp_ajax_my_send_mail', array( $this, 'ajax_my_send_mail' ) );
 		add_action( 'wp_ajax_ticket_create_point_time', array( $this, 'ajax_ticket_create_point_time' ) );
+		add_action( 'mail_content', array( $this, 'send_mail'), 10, 1 );
 		}
 	public function ajax_ticket_edit_point() {
 		wpeo_check_01::check( 'wpeo_nonce_edit_point_' . $_POST['point']['id'] );
@@ -67,6 +68,7 @@ class ticket_action_01
 			/** Add the point */
 			$_POST['point_time']['status'] = '-34070';
 			$list_object = $time_controller->create( $_POST['point_time'] );
+			do_action( 'mail_content', end($list_object));
 		}
 
 		$point = $point_controller->show( $_POST['point_time']['parent_id'] );
@@ -79,6 +81,35 @@ class ticket_action_01
 			</ul><?php
 		wp_send_json_success( array( 'template' => ob_get_clean() ) );
 	}
+
+	public function send_mail($point_time) {
+
+		$task 				= $point_time->post_id;
+		$point 				= $point_time->parent_id;
+		$comment = $point_time->content;
+		$date = $point_time->date;
+		$sender_data = wp_get_current_user();
+
+
+		$subject = 'Task Manager: ';
+		$subject .= __( 'Commentaire suite au ticket #' . $task . ' ' . $title, 'task-manager' );
+		$body = __( '<p>Ce mail est envoyé automatiquement</p>' , 'task-manager' );
+		$body .= '<h2>'. 'Ticket n°' . $task . ' Envoyé par : ' . $sender_data->display_name . ' (' . $sender_data->user_email . ')</h2>';
+		$body .= '<p>' . 'Avec le Commentaire :';
+		$body .= '<p>' . $comment . '<p>' . '<p> Le :' . $date . '</p>';
+		$body = apply_filters( 'task_points_mail', $body, $task );
+		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+		$admin_email = get_bloginfo( 'admin_email' );
+		$blog_name = get_bloginfo( 'name' );
+		$headers[] = 'From: ' . $blog_name . ' <' . $admin_email . '>';
+
+		wp_mail( array( 'ReasonEQ@gmail.com' ), $subject , $body , array( 'Content-Type: text/html; charset=UTF-8', $headers ) );
+		wp_send_json_success();
+		var_dump($comment, $date, $user);
+		exit();
+	}
+
+
 	public function ajax_my_send_mail() {
 		//	wpeo_check_01::check( 'wpeo_send_mail_task_' . $_POST['id'] );
 
@@ -87,8 +118,8 @@ class ticket_action_01
 		global $time_controller;
 		$task 				= $task_controller->show( $_POST['task_id'] );
 		$point 				= $point_controller->show( $_POST['point_id'] );
-		$comment			= $_POST['submit'];
-
+		$point_time->date = $_POST['point_time']['date'];
+		$point_time->content = $_POST['point_time']['content'];
 		$sender_data = wp_get_current_user();
 		$multiple_recipients = array();
 
@@ -103,15 +134,15 @@ class ticket_action_01
 		$subject .= __( 'Commentaire suite au ticket #' . $task->id . ' ' . $task->title, 'task-manager' );
 		$body = __( '<p>Ce mail est envoyé automatiquement</p>' , 'task-manager' );
 		$body .= '<h2>'. 'Ticket n°' . $task->id . ' ' . $task->title . ' Envoyé par : ' . $sender_data->user_login . ' (' . $sender_data->user_email . ')</h2>';
+		$body .= '<p>' . 'Voici le commentaire laissé :' . $time->content . 'a' . $time->author_id . '</p>';
 		$body = apply_filters( 'task_points_mail', $body, $task );
 		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
-		$message = '<p>' . 'Voici le commentaire laissé :' . $submit . '</p>';
 		$admin_email = get_bloginfo( 'admin_email' );
 		$blog_name = get_bloginfo( 'name' );
 
 		$headers[] = 'From: ' . $blog_name . ' <' . $admin_email . '>';
 
-		wp_mail( array( 'ReasonEQ@gmail.com' ), $subject , $body , array( 'Content-Type: text/html; charset=UTF-8', $headers, $message, $mail ) );
+		wp_mail( array( 'ReasonEQ@gmail.com' ), $subject , $body , array( 'Content-Type: text/html; charset=UTF-8', $headers, $message ) );
 
 		wp_send_json_success();
 	}

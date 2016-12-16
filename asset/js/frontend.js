@@ -73,14 +73,19 @@ var wpeo_point_ticket = {
 	send_mail: function( element ) {
 		var task_id = jQuery( element ).closest( '.wpeo-task-li-point' ).data( 'task' );
 		var point_id = jQuery( element ).closest( '.wpeo-task-li-point' ).data( 'id' );
+		var date = new Date().toISOString().slice( 0, 10 );
+		var content = jQuery( '#wpeo-point-comment' ).val();
 		var data = {
 			action: 'my_send_mail',
 			task_id: task_id,
 			point_id: point_id,
+			date: date,
+			content: content,
 			_wpnonce: jQuery( element ).data( 'nonce' ),
 		};
+		jQuery( '#wpeo-point-comment' ).val( '' );
 		jQuery.eoajax( ajaxurl, data, function() {
-
+			point_bloc.find( '.list-comment' ).replaceWith( this.template );
 		} );
 	}
 };
