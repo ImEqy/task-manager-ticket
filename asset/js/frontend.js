@@ -4,7 +4,7 @@ jQuery( document ).ready( function() {
 
 var wpeo_point_ticket = {
   event: function() {
-		jQuery( document ).on( 'click', '.wpeo-done-point', function( e ) { wpeo_point_ticket.switch_completed( jQuery( this ) ); } );
+		jQuery( document ).on( 'click', '.wpeo-done-point', function() { wpeo_point_ticket.switch_completed( jQuery( this ) ); } );
 		jQuery( document ).on( 'click', '.wpeo-submit', function() { wpeo_point_ticket.create_point_time( jQuery( this ) ); } );
 		jQuery( document ).on( 'click', '.wpeo-send-mail', function() { wpeo_point_ticket.send_mail( jQuery( this ) ); } );
   },
@@ -44,7 +44,6 @@ var wpeo_point_ticket = {
     var author_id = jQuery( element ).data( 'author' );
     var date = new Date().toISOString().slice( 0, 10 );
     var content = jQuery( '#wpeo-point-comment' ).val();
-
     var data = {
       action: 'ticket_create_point_time',
       point_time_id:0,
