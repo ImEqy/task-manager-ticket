@@ -94,12 +94,12 @@ class ticket_action_01
 		$affected = $task->option['user_info']['affected_id'];
 		$affected[] = $task->option['user_info']['owner_id'];
 		$liste_email = array();
-		$sender_name = wp_get_current_user();
+		$sender_data = wp_get_current_user();
 
 		$subject = 'Task Manager: ';
 		$subject .= __( 'Commentaire suite au ticket #' . $task->id . ' ' . $title, 'task-manager' );
 		$body = __( '<p>Ce mail est envoyé automatiquement</p>' , 'task-manager' );
-		$body .= '<h2>'. 'Ticket n°' . $task->id . ' Envoyé par : ' . $sender_name->display_name . ' (' . $sender_name->user_email . ')</h2>';
+		$body .= '<h2>'. 'Ticket n°' . $task->id . ' Envoyé par : ' . $sender_data->display_name . ' (' . $sender_data->user_email . ')</h2>';
 		$body .= '<p>' . 'Avec le Commentaire :';
 		$body .= '<p>' . $comment . '<p>' . '<p> Le :' . $date . '</p>';
 		$body = apply_filters( 'task_points_mail', $body, $task );
