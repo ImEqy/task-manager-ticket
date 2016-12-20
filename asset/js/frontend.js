@@ -75,6 +75,7 @@ var wpeo_point_ticket = {
 		var point_id = jQuery( element ).closest( '.wpeo-task-li-point' ).data( 'id' );
 		var date = new Date().toISOString().slice( 0, 10 );
 		var content = jQuery( '#wpeo-point-comment' ).val();
+		var task_bloc = jQuery( element ).closest( '.wpeo-project-task' );
 		var data = {
 			action: 'my_send_mail',
 			task_id: task_id,
